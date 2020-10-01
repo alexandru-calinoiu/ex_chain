@@ -1,4 +1,4 @@
-defmodule ExChain.BlockChain.Block do
+defmodule ExChain.Blockchain.Block do
   @moduledoc """
     This module is te single block struct in a blockchain
   """
@@ -16,8 +16,22 @@ defmodule ExChain.BlockChain.Block do
 
   @spec new(pos_integer(), String.t(), any()) :: Block.t()
   def new(timestamp, last_hash, data) do
-    hash = hash(timestamp, last_hash, data)
-    %__MODULE__{timestamp: timestamp, last_hash: last_hash, hash: hash, data: data}
+    %__MODULE__{}
+    |> add_timestapm(timestamp)
+    |> add_last_hash(last_hash)
+    |> add_data(data)
+    |> add_hash
+  end
+
+  @spec get_str(Block.t()) :: String.t()
+  def get_str(block = %__MODULE__{}) do
+    """
+    Block
+    timestamp: #{block.timestamp}
+    last_hash: #{block.last_hash}
+    hash: #{block.hash}
+    data: #{block.data}
+    """
   end
 
   @spec genesis() :: Block.t()
@@ -30,6 +44,16 @@ defmodule ExChain.BlockChain.Block do
   end
 
   # private functions
+  defp add_timestapm(%__MODULE__{} = block, timestamp), do: %{block | timestamp: timestamp}
+
+  defp add_data(%__MODULE__{} = block, data), do: %{block | data: data}
+
+  defp add_last_hash(%__MODULE__{} = block, last_hash), do: %{block | last_hash: last_hash}
+
+  defp add_hash(%__MODULE__{timestamp: timestamp, last_hash: last_hash, data: data} = block) do
+    %{block | hash: hash(timestamp, last_hash, data)}
+  end
+
   defp get_timestamp(), do: DateTime.utc_now() |> DateTime.to_unix(1_000_000)
 
   defp hash(timestamp, last_hash, data) do

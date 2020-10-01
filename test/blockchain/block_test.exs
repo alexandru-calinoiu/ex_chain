@@ -4,7 +4,7 @@ defmodule ExChain.Blockchain.BlockTest do
   """
 
   use ExUnit.Case
-  alias ExChain.BlockChain.Block
+  alias ExChain.Blockchain.Block
 
   describe "block" do
     test "genesis block is valid" do
@@ -27,8 +27,8 @@ defmodule ExChain.Blockchain.BlockTest do
 
     test "new give a new block when we pass the parameters" do
       timestamp = DateTime.utc_now() |> DateTime.to_unix(1_000_000)
+      last_hash = "random_hash"
       data = "this is a new block data"
-      last_hash = "random_hash_last_block"
 
       assert %Block{timestamp: ^timestamp, hash: _hash, last_hash: ^last_hash, data: ^data} =
                Block.new(timestamp, last_hash, data)
