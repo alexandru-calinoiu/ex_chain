@@ -25,6 +25,19 @@ defmodule ExChain.Blockchain do
     %{blockchain | chain: chain ++ [Block.mine_block(last_block, data)]}
   end
 
+  @spec valid_chain?(Blockchain.t()) :: boolean()
+  def valid_chain?(%__MODULE__{chain: chain}) do
+    chain
+    |> Enum.chunk_every(2, 1, :discard)
+    |> Enum.all?(fn [prev_block, block] ->
+      valid_last_hash?(prev_block, block) && valid_block_hash?(prev_block)
+    end)
+  end
+
   # private functions
   defp add_genesis(%__MODULE__{} = blockchain), do: %{blockchain | chain: [Block.genesis()]}
+
+  defp valid_last_hash?(%Block{hash: hash}, %Block{last_hash: last_hash}), do: hash == last_hash
+
+  defp valid_block_hash?(%Block{hash: hash} = block), do: hash == Block.block_hash(block)
 end

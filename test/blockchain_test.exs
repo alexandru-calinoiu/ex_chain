@@ -21,6 +21,28 @@ defmodule ExChain.BlockchainTest do
       [_, block] = blockchain.chain
       assert block.data == data
     end
+
+    test "validate blockchain", %{blockchain: blockchain} do
+      blockchain = Blockchain.add_block(blockchain, "some-block-data")
+      assert Blockchain.valid_chain?(blockchain)
+    end
+
+    test "when temper data in existing chain", %{blockchain: blockchain} do
+      blockchain =
+        blockchain
+        |> Blockchain.add_block("data-block-1")
+        |> Blockchain.add_block("data-block-2")
+        |> Blockchain.add_block("data-block-3")
+
+      assert Blockchain.valid_chain?(blockchain)
+
+      index = 2
+      tempered_block = put_in(Enum.at(blockchain.chain, index).data, "tempered_data")
+
+      blockchain = %Blockchain{chain: List.replace_at(blockchain.chain, index, tempered_block)}
+
+      refute Blockchain.valid_chain?(blockchain)
+    end
   end
 
   defp init_blockchain(context), do: Map.put(context, :blockchain, Blockchain.new())

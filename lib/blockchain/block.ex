@@ -43,6 +43,11 @@ defmodule ExChain.Blockchain.Block do
     __MODULE__.new(get_timestamp(), last_hash, data)
   end
 
+  @spec block_hash(Block.t()) :: String.t()
+  def block_hash(%__MODULE__{timestamp: timestamp, last_hash: last_hash, data: data}) do
+    hash(timestamp, last_hash, data)
+  end
+
   # private functions
   defp add_timestapm(%__MODULE__{} = block, timestamp), do: %{block | timestamp: timestamp}
 
